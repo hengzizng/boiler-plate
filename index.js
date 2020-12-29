@@ -8,6 +8,8 @@ const port = 5000
 const bodyParser = require('body-parser');
 /* User model을 가져온다 */
 const { User } = require("./models/User");
+/* key.js를 가져온다 */
+const config = require('./config/key')
 
 
 /* body-parser의 옵션을 준다 */
@@ -19,7 +21,7 @@ app.use(bodyParser.json());
 
 /* mongoose module을 가져온다 */
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://hyejikim:1234@boilerplate.zebjf.mongodb.net/<dbname>?retryWrites=true&w=majority', {
+mongoose.connect(config.mongoURI, {
    /* 안쓰면 에러 발생 */
    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
    /* MongoDB 연결 성공/실패 시 동작 */
