@@ -59,6 +59,8 @@ userSchema.pre('save', function( next ){
                 next()
             })
         })
+    } else { /* 다른 정보가 수정될 때는 바로 다음으로 넘어감(next()를 쓰지 않으면 현재 함수에서 멈춰있음) */
+        next()
     }
 
 })
