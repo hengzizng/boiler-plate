@@ -65,6 +65,19 @@ userSchema.pre('save', function( next ){
 
 })
 
+/* userSchema를 가져와서 comparePassword 메소드 만듦
+   cb : callback */
+userSchema.methods.comparePassword = function(plainPassword, cb) {
+    // plainPassword 1234567    암호화된 비밀번호 $2b$10$hs/0yyBsUnyDDEv.j38s0OrCsSokxr1J5kICObGFO0ZFchbNYAMY.
+    /* 암호화된 비밀번호를 복구하는것은 불가하기 때문에 plainPassword를 암호화해서 암호화된 비밀번호화 비교 */
+    bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
+        /* 비밀번호가 같지 않으면 */
+        if(err) return cb(err),
+            /* 비밀번호가 같다면 err는 null이고 isMatch는 true => index.js의 comparePassword 함수를 호출한 부분으로 넘어감 */
+            cb(null, isMatch)
+    })
+}
+
 /* schema를 감싸주는 model */
 const User = mongoose.model('User', userSchema)
 

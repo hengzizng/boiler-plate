@@ -57,6 +57,37 @@ app.post('/register', (req, res) => {
    } )
 })
 
+/* 로그인을 위한 Login Route 만들기
+   Route의 Endpoint : /login
+   callback function : request, response */
+app.post('/login', (req, res) => {
+
+   // 요청된 이메일을 데이터베이스에서 있는지 찾는다.
+   User.findOne({ email: req.body.email }, (err, user) => {  /* User model을 가져와서 mongoDB에서 제공하는 findOne 메소드를 이용해 요청한 이메일이 DB에 있는지 찾는다 */
+      if(!user) {  /* 만약 이메일이 DB에 없다면 user는 비어있을 것 */
+         return res.json({
+            loginSuccess: false,
+            message: "제공된 이메일에 해당하는 유저가 없습니다."
+         })
+      }
+
+      // 요청된 이메일이 데이터베이스에 있다면 비밀번호가 맞는 비밀번호인지 확인.
+      user.comparePassword(req.body.password , (err, isMatch) => {  /* user model에 만든 comparePassword 메소드 사용, req.body.password 는 plainPassword(입력한 그대로의 PW) */
+         /* isMatch가 없으면 비밀번호가 틀림 */
+         if(!isMatch)
+            return res.json({ loginSuccess: false, message: "비밀번호가 틀렸습니다." })
+         
+         // 비밀번호까지 맞다면 그 유저를 위한 토큰을 생성하기
+         user.gernerateToken((err, user) => {  /* user model에 만든 gernerateToken 메소드 사용 */
+            
+         })
+      })
+
+   })
+
+
+})
+
 /* port 5000번에서 app 실행
    app이 5000에 listen을 하면 console print */
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
