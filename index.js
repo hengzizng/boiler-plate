@@ -40,9 +40,9 @@ app.get('/', (req, res) => res.send('Hello World!'));
 
 
 /* 회원가입을 위한 Register Route 만들기
-   Route의 Endpoint : /register
+   Route의 Endpoint : /api/users/register
    callback function : request, response */
-app.post('/register', (req, res) => {
+app.post('/api/users/register', (req, res) => {
    // 회원가입할 때 필요한 정보들을 client에서 가져오면
    // 그것들을 데이터베이스에 넣어준다.
 
@@ -61,9 +61,9 @@ app.post('/register', (req, res) => {
 })
 
 /* 로그인을 위한 Login Route 만들기
-   Route의 Endpoint : /login
+   Route의 Endpoint : /api/users/login
    callback function : request, response */
-app.post('/login', (req, res) => {
+app.post('/api/users/login', (req, res) => {
 
    // 요청된 이메일을 데이터베이스에서 있는지 찾는다.
    User.findOne({ email: req.body.email }, (err, user) => {  /* User model을 가져와서 mongoDB에서 제공하는 findOne 메소드를 이용해 요청한 이메일이 DB에 있는지 찾는다 */
@@ -88,14 +88,12 @@ app.post('/login', (req, res) => {
             res.cookie("x_auth", user.token)  /* Name이 x_auth 이고 Value가 user.token 인 cookie */
                .status(200)  /* 성공 */
                .json({ loginSuccess: true, userId: user._id });  /* json으로 데이터 보냄 */
-
          });
       });
 
    });
 
-
-})
+});
 
 /* port 5000번에서 app 실행
    app이 5000에 listen을 하면 console print */
