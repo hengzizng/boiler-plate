@@ -11,6 +11,8 @@ const cookieParser = require('cookie-parser');
 /* key.js를 가져온다 */
 const config = require('./config/key');
 
+/* auth module을 가져온다 */
+const { auth } = require('./middleware/auth');
 /* User model을 가져온다 */
 const { User } = require("./models/User");
 
@@ -34,24 +36,32 @@ mongoose.connect(config.mongoURI, {
   .catch(err => console.log(err));
 
 
-/* root directory에 오면 Hello World! 출력
-   브라우저 주소에 localhost:5000/ 입력하면 확인가능 */
+/**
+ * root directory에 오면 Hello World! 출력
+ * 브라우저 주소에 localhost:5000/ 입력하면 확인가능
+ */
 app.get('/', (req, res) => res.send('Hello World!'));
 
 
-/* 회원가입을 위한 Register Route 만들기
-   Route의 Endpoint : /api/users/register
-   callback function : request, response */
+/**
+ * 회원가입을 위한 Register Route 만들기
+ * Route의 Endpoint : /api/users/register
+ * callback function : request, response
+ */
 app.post('/api/users/register', (req, res) => {
    // 회원가입할 때 필요한 정보들을 client에서 가져오면
    // 그것들을 데이터베이스에 넣어준다.
 
-   /* req.body 에는 json 형식으로 데이터들이 들어있는데
-      이 데이터들은 body-parser가 client의 정보를 받아준 것  */
+   /**
+    * req.body 에는 json 형식으로 데이터들이 들어있는데
+    * 이 데이터들은 body-parser가 client의 정보를 받아준 것 
+    */
    const user = new User(req.body);
 
-   /* save() : mongoDB에서 오는 method, 정보들이 user model에 저장됨
-      err, userInfo : callback function */
+   /** 
+    * save() : mongoDB에서 오는 method, 정보들이 user model에 저장됨
+    * err, userInfo : callback function
+    */
    user.save((err, userInfo) => {
       /* 저장할 때 에러가 있으면 client에 에러 있다고 json 형식으로(에러 메시지 포함) 전달 */
       if (err) return res.json({ success: false, err });
@@ -60,9 +70,11 @@ app.post('/api/users/register', (req, res) => {
    })
 })
 
-/* 로그인을 위한 Login Route 만들기
-   Route의 Endpoint : /api/users/login
-   callback function : request, response */
+/**
+ * 로그인을 위한 Login Route 만들기
+ * Route의 Endpoint : /api/users/login
+ * callback function : request, response
+ */
 app.post('/api/users/login', (req, res) => {
 
    // 요청된 이메일을 데이터베이스에서 있는지 찾는다.
@@ -95,6 +107,29 @@ app.post('/api/users/login', (req, res) => {
 
 });
 
-/* port 5000번에서 app 실행
-   app이 5000에 listen을 하면 console print */
+/** 
+ * 사용자 인증을 위한 Auth Route
+ * 두 번째 인자 auth : 미들웨어
+ * 미들웨어 : end point(/api/users/auth)에서 request를 받은 후에 callback 함수가 실행되기 전 중간에서 무언가를 해준다.
+ */
+app.get('/api/users/auth', auth, (req, res) => {
+   // 여기까지 미들웨어를 통과해 왔다는 얘기는 Authentication이 True라는 말.
+   /* 따라서 클라이언트에 정보를 전달해준다. */
+   res.status(200).json({
+      _id: req.user._id,
+      /* role : 0 -> 일반유저, 0이 아니면 -> 관리자 */
+      isAdmin: req.user.role === 0 ? false : true,
+      isAuth: true,
+      email: req.user.email,
+      name: req.user.name,
+      lastname: req.user.lastname,
+      role: req.uer.role,
+      image: req.user.image
+   })
+})
+
+/**
+ * port 5000번에서 app 실행
+ * app이 5000에 listen을 하면 console print
+ */
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
