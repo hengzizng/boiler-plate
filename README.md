@@ -1,4 +1,4 @@
-## package.json 설명    
+## package.json    
 ---
 ### "scripts"
 + "start": "node index.js"    
@@ -15,5 +15,5 @@
     
     
     
-### npm 명령어 하나하나 기억하기 위해 gitignore 사용하지 않음    
+### npm 명령어 기 위해 gitignore 사용하지 않음    
 
